@@ -913,15 +913,17 @@ function parseDate(val){
 }
 
 /* fmtD global — konversi string tanggal apapun ke tampilan dd Mon yyyy */
+var BULAN=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
 function fmtD(s){
   if(!s) return null;
   var iso = parseDate(s);
   if(!iso) return null;
   var p = iso.split('-');
-  if(p.length !== 3) return s;
-  var dt = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
-  if(isNaN(dt.getTime())) return s;
-  return dt.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+  if(p.length !== 3) return null;
+  var dd=parseInt(p[2]), mm=parseInt(p[1])-1, yyyy=parseInt(p[0]);
+  if(isNaN(dd)||isNaN(mm)||isNaN(yyyy)) return null;
+  if(mm<0||mm>11) return null;
+  return (dd<10?'0':'')+dd+' '+BULAN[mm]+' '+yyyy;
 }
 
 function normalizeRow(d){
@@ -1142,7 +1144,11 @@ function sisaHari(spkEnd, targetOpening){
   }
   return parts.join('<div style="margin-top:3px"></div>');
 }
-function fmtDate(d){return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'2-digit'});}
+function fmtDate(d){
+  if(!d||isNaN(d.getTime())) return '—';
+  var dd=d.getDate(), mm=d.getMonth(), yy=String(d.getFullYear()).slice(2);
+  return (dd<10?'0':'')+dd+' '+BULAN[mm]+' '+yy;
+}
 
 /* ─── 6 DISIPLIN BARS ─── */
 function disBar(pct, label, isNA){
